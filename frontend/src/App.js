@@ -1,24 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap/dist/js/bootstrap.bundle';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import Header from './components/layout/Header';
+import Dashboard from './components/pages/Dashboard/Dashboard';
+import WorkHours from './components/pages/WorkHours/WorkHours';
+import Absences from './components/pages/Absences/Absences';
+
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="App">
+        <Header />
+        <div className="container mt-3">
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/workhours" element={<WorkHours />} />
+            <Route path="/absences" element={<Absences />} />
+          </Routes>
+        </div>
+      </div>
+    </Router>
   );
 }
 
