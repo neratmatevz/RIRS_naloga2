@@ -1,23 +1,57 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.bundle';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { auth, getUserRole } from './firebase'; // Uvozi avtentikacijo in funkcijo za vlogo
 import Header from './components/layout/Header';
 import Dashboard from './components/pages/Dashboard/Dashboard';
 import WorkHours from './components/pages/WorkHours/WorkHours';
 import Absences from './components/pages/Absences/Absences';
-
+import Login from './auth/Login';
+import Register from './auth/Register';
 
 function App() {
+  const [role, setRole] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        setIsAuthenticated(true);
+        const role = await getUserRole(user.uid);
+        setRole(role);
+      } else {
+        setIsAuthenticated(false);
+        setRole(null);
+      }
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  if (loading) return <p>Nalaganje...</p>;
+
   return (
     <Router>
       <div className="App">
-        <Header />
+        {isAuthenticated && <Header role={role} />}
         <div className="container mt-3">
           <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/workhours" element={<WorkHours />} />
-            <Route path="/absences" element={<Absences />} />
+            <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} setRole={setRole} />} />
+            <Route path="/register" element={<Register />} />
+            <Route
+              path="/"
+              element={isAuthenticated ? (role === 'admin' ? <Dashboard /> : <Navigate to="/workhours" />) : <Navigate to="/login" />}
+            />
+            <Route
+              path="/workhours"
+              element={isAuthenticated ? <WorkHours /> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/absences"
+              element={isAuthenticated && role === 'admin' ? <Absences /> : <Navigate to="/login" />}
+            />
           </Routes>
         </div>
       </div>
