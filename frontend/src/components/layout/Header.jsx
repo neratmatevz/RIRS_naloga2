@@ -1,7 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { auth } from '../../firebase';
 
-function Header() {
+function Header({ role }) {
+  const handleLogout = () => {
+    auth.signOut();
+    window.location.reload(); // Osveži stran po odjavi
+  };
+
   return (
     <header className="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
       <div className="container">
@@ -19,14 +25,21 @@ function Header() {
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
-            <li className="nav-item">
-              <Link className="nav-link text-dark" to="/">Nadzorna plošča</Link>
-            </li>
+            {role === 'admin' && (
+              <>
+                <li className="nav-item">
+                  <Link className="nav-link text-dark" to="/">Nadzorna plošča</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link text-dark" to="/absences">Bolniške/Dopusti</Link>
+                </li>
+              </>
+            )}
             <li className="nav-item">
               <Link className="nav-link text-dark" to="/workhours">Moje ure</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link text-dark" to="/absences">Bolniške/Dopusti</Link>
+              <button className="nav-link btn btn-link text-dark" onClick={handleLogout}>Odjava</button>
             </li>
           </ul>
         </div>
