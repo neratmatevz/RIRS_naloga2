@@ -16,7 +16,7 @@ function Login({ setRole }) {
       setRole(role);
       console.log("Prijava uspešna kot:", role);
 
-      // Preusmeri na osnovno stran, kjer se preverja vloga
+    
       navigate('/');
     } catch (error) {
       console.error("Napaka pri prijavi:", error);
