@@ -2,10 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { auth } from '../../firebase';
 
-function Header({ role }) {
+function Header({ role, setRole, setIsAuthenticated }) {
   const handleLogout = () => {
     auth.signOut();
-    window.location.reload(); // Osveži stran po odjavi
+    setRole(null);
+    setIsAuthenticated(false);
   };
 
   return (
@@ -26,17 +27,15 @@ function Header({ role }) {
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
             {role === 'admin' && (
-              <>
-                <li className="nav-item">
-                  <Link className="nav-link text-dark" to="/">Nadzorna plošča</Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link text-dark" to="/absences">Bolniške/Dopusti</Link>
-                </li>
-              </>
+              <li className="nav-item">
+                <Link className="nav-link text-dark" to="/">Nadzorna plošča</Link>
+              </li>
             )}
             <li className="nav-item">
               <Link className="nav-link text-dark" to="/workhours">Moje ure</Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link text-dark" to="/leaves">Moji dopusti/bolniške</Link>
             </li>
             <li className="nav-item">
               <button className="nav-link btn btn-link text-dark" onClick={handleLogout}>Odjava</button>
