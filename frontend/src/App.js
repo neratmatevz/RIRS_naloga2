@@ -7,6 +7,7 @@ import Header from './components/layout/Header';
 import Dashboard from './components/pages/Dashboard/Dashboard';
 import WorkHours from './components/pages/WorkHours/WorkHours';
 import Absences from './components/pages/Absences/Absences';
+import LeaveAndVacation from './components/pages/LeaveAndVacation/LeaveAndVacation';
 import Login from './auth/Login';
 import Register from './auth/Register';
 
@@ -35,7 +36,7 @@ function App() {
   return (
     <Router>
       <div className="App">
-        {isAuthenticated && <Header role={role} />}
+        {isAuthenticated && <Header role={role} setRole={setRole} setIsAuthenticated={setIsAuthenticated} />}
         <div className="container mt-3">
           <Routes>
             <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} setRole={setRole} />} />
@@ -51,6 +52,10 @@ function App() {
             <Route
               path="/absences"
               element={isAuthenticated && role === 'admin' ? <Absences /> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/leaves"
+              element={isAuthenticated ? <LeaveAndVacation /> : <Navigate to="/login" />}
             />
           </Routes>
         </div>
