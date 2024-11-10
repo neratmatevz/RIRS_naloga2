@@ -1,10 +1,10 @@
 const express = require('express');
 const cors = require('cors');
-const {initializeFirestore} = require('./config/firebase.js');
-const authRoutes = require('./routes/authenticationRoutes.js');
-const workHoursRoutes = require('./routes/workingHoursRoutes.js');
-const sickAbsenceRoutes = require('./routes/sickAbsenceRoutes.js');
-const vacationAbsenceRoutes = require('./routes/vacationAbsenceRoutes.js');
+const {initializeFirestore} = require('./src/config/firebase.js');
+const authRoutes = require('./src/routes/authenticationRoutes.js');
+const workHoursRoutes = require('./src/routes/workingHoursRoutes.js');
+const sickAbsenceRoutes = require('./src/routes/sickAbsenceRoutes.js');
+const vacationAbsenceRoutes = require('./src/routes/vacationAbsenceRoutes.js');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
