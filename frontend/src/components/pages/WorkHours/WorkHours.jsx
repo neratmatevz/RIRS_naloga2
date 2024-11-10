@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../../context/Context';
+import EditPopup from './EditPopup';
 
-const mockWorkHours = [
-  { date: "2023-10-01", hoursWorked: 8, overtime: 2 },
-  { date: "2023-10-02", hoursWorked: 7.5, overtime: 1.5 },
-  { date: "2023-10-03", hoursWorked: 8, overtime: 0 },
-  { date: "2023-10-04", hoursWorked: 6.5, overtime: 0 },
-  { date: "2023-10-05", hoursWorked: 8, overtime: 1 },
-];
 
 function WorkHours() {
   const { userId } = useAuth();
@@ -16,6 +10,9 @@ function WorkHours() {
   const [hoursWorked, setHoursWorked] = useState(0);
   const [overtime, setOvertime] = useState(0);
   const [workHours, setWorkHours] = useState([]);
+  const [isEditPopupOpen, setEditPopupOpen] = useState(false);
+  const [selectedWorkDay, setSelectedWorkDay] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(null);
 
 
   useEffect(() => {
@@ -73,8 +70,57 @@ function WorkHours() {
       .catch((error) => {
         console.error('Error adding new sick leave:', error);
       });
-      
-      setDate("");
+
+    setDate("");
+  };
+
+  const handleEditClick = (workDay, index) => {
+    setSelectedWorkDay(workDay);
+    setSelectedIndex(index);
+    setEditPopupOpen(true);
+  };
+
+  const handleSaveEdit = (updatedWorkDay) => {
+    // Update the specific item in the workHours array using the index
+    const updatedWorkHours = workHours.map((day, index) =>
+      index === selectedIndex ? updatedWorkDay : day
+    );
+    setWorkHours(updatedWorkHours);
+
+    // Send updated data to backend with the index (or other identifier as needed)
+    fetch(`http://localhost:3001/api/workHours/${selectedIndex}?userId=${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedWorkDay),
+    })
+    .then(response => response.json())
+    .then(data => console.log('Successfully updated:', data))
+    .catch(error => console.error('Error updating work hours:', error));
+    
+    setEditPopupOpen(false);
+  };
+
+  const handleDeleteClick = (workDay, index) => {
+    // Remove the item from the frontend state
+    const updatedWorkHours = workHours.filter((_, i) => i !== index);
+    setWorkHours(updatedWorkHours);
+  
+    // Send delete request to the backend
+    fetch(`http://localhost:3001/api/workHours/${index}?userId=${userId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to delete work hours');
+        }
+        console.log('Successfully deleted:', workDay);
+      })
+      .catch((error) => console.error('Error deleting work hours:', error));
   };
 
   return (
@@ -98,8 +144,8 @@ function WorkHours() {
               <td>{workDay.hours}</td>
               <td>{workDay.overtime}</td>
               <td>
-                <button className="btn btn-primary btn-sm me-2">Uredi</button>
-                <button className="btn btn-danger btn-sm">Izbriši</button>
+                <button className="btn btn-primary btn-sm me-2" onClick={() => handleEditClick(workDay, index)}>Uredi</button>
+                <button className="btn btn-danger btn-sm" onClick={() => handleDeleteClick(workDay, index)}>Izbriši</button>
               </td>
             </tr>
           ))}
@@ -123,7 +169,20 @@ function WorkHours() {
         </div>
         <button type="submit" className="btn btn-primary">Dodaj</button>
       </form>
+
+
+      {isEditPopupOpen && (
+        <EditPopup
+          workDay={selectedWorkDay}
+          onClose={() => setEditPopupOpen(false)}
+          onSave={handleSaveEdit}
+        />
+      )}
+
     </div>
+
+
+
   );
 }
 
