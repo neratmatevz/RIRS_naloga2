@@ -10,6 +10,7 @@ import Absences from './components/pages/Absences/Absences';
 import LeaveAndVacation from './components/pages/LeaveAndVacation/LeaveAndVacation';
 import Login from './auth/Login';
 import Register from './auth/Register';
+import { AuthProvider } from './context/Context';
 
 function App() {
   const [role, setRole] = useState(null);
@@ -34,33 +35,35 @@ function App() {
   if (loading) return <p>Nalaganje...</p>;
 
   return (
-    <Router>
-      <div className="App">
-        {isAuthenticated && <Header role={role} setRole={setRole} setIsAuthenticated={setIsAuthenticated} />}
-        <div className="container mt-3">
-          <Routes>
-            <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} setRole={setRole} />} />
-            <Route path="/register" element={<Register />} />
-            <Route
-              path="/"
-              element={isAuthenticated ? (role === 'admin' ? <Dashboard /> : <Navigate to="/workhours" />) : <Navigate to="/login" />}
-            />
-            <Route
-              path="/workhours"
-              element={isAuthenticated ? <WorkHours /> : <Navigate to="/login" />}
-            />
-            <Route
-              path="/absences"
-              element={isAuthenticated && role === 'admin' ? <Absences /> : <Navigate to="/login" />}
-            />
-            <Route
-              path="/leaves"
-              element={isAuthenticated ? <LeaveAndVacation /> : <Navigate to="/login" />}
-            />
-          </Routes>
+    <AuthProvider>
+      <Router>
+        <div className="App">
+          {isAuthenticated && <Header role={role} setRole={setRole} setIsAuthenticated={setIsAuthenticated} />}
+          <div className="container mt-3">
+            <Routes>
+              <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} setRole={setRole} />} />
+              <Route path="/register" element={<Register />} />
+              <Route
+                path="/"
+                element={isAuthenticated ? (role === 'admin' ? <Dashboard /> : <Navigate to="/workhours" />) : <Navigate to="/login" />}
+              />
+              <Route
+                path="/workhours"
+                element={isAuthenticated ? <WorkHours /> : <Navigate to="/login" />}
+              />
+              <Route
+                path="/absences"
+                element={isAuthenticated && role === 'admin' ? <Absences /> : <Navigate to="/login" />}
+              />
+              <Route
+                path="/leaves"
+                element={isAuthenticated ? <LeaveAndVacation /> : <Navigate to="/login" />}
+              />
+            </Routes>
+          </div>
         </div>
-      </div>
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 }
 

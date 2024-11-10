@@ -2,16 +2,21 @@ import React, { useState } from 'react';
 import { auth, getUserRole } from '../firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/Context';
 
 function Login({ setRole }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { setUserId } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const uid = userCredential.user.uid;  // Get userId from Firebase
+      setUserId(uid);  // Set the userId in context
+
       const role = await getUserRole(userCredential.user.uid);
       setRole(role);
       console.log("Prijava uspešna kot:", role);

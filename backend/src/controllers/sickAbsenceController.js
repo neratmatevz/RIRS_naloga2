@@ -61,20 +61,25 @@ exports.addSickAbsenceHours = async (req, res) => {
         const startDateTimestamp = new Date(startDate); // Convert to JavaScript Date
         const endDateTimestamp = new Date(endDate);     // Convert to JavaScript Date
 
-        // Create a new sick leave object
         const newSickLeave = {
             startDate: admin.firestore.Timestamp.fromDate(startDateTimestamp),
             endDate: admin.firestore.Timestamp.fromDate(endDateTimestamp)
         };
-
+        
         // Add the new sick leave object to the user's sickLeave array
         await userDocRef.update({
             sickLeave: admin.firestore.FieldValue.arrayUnion(newSickLeave)
         });
-
+        
+        // Convert Firestore Timestamps to JavaScript Date objects
+        const newSickLeaveResponse = {
+            startDate: newSickLeave.startDate.toDate(), // Convert to JavaScript Date
+            endDate: newSickLeave.endDate.toDate() // Convert to JavaScript Date
+        };
+        
         res.status(201).json({
             message: 'Sick absence hours added successfully',
-            sickLeave: newSickLeave
+            sickLeave: newSickLeaveResponse
         });
 
     } catch (error) {
