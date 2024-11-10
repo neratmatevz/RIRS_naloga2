@@ -1,23 +1,126 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '../../../context/Context';
+import EditPopup from './EditPopup';
 
-const mockWorkHours = [
-  { date: "2023-10-01", hoursWorked: 8, overtime: 2, notes: "Project A" },
-  { date: "2023-10-02", hoursWorked: 7.5, overtime: 1.5, notes: "Client meeting" },
-  { date: "2023-10-03", hoursWorked: 8, overtime: 0, notes: "Office work" },
-  { date: "2023-10-04", hoursWorked: 6.5, overtime: 0, notes: "Training session" },
-  { date: "2023-10-05", hoursWorked: 8, overtime: 1, notes: "Project B deadline" },
-];
 
 function WorkHours() {
+  const { userId } = useAuth();
+
   const [date, setDate] = useState("");
-  const [hoursWorked, setHoursWorked] = useState("");
-  const [overtime, setOvertime] = useState("");
-  const [notes, setNotes] = useState("");
+  const [hoursWorked, setHoursWorked] = useState(0);
+  const [overtime, setOvertime] = useState(0);
+  const [workHours, setWorkHours] = useState([]);
+  const [isEditPopupOpen, setEditPopupOpen] = useState(false);
+  const [selectedWorkDay, setSelectedWorkDay] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(null);
+
+
+  useEffect(() => {
+    fetch(`http://localhost:3001/api/workHours?userId=${userId}`)
+      .then((response) => {
+        if (!response.ok) {
+          return Promise.reject('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        const formattedWorkHours = data.workHours.map((entry) => {
+          // Convert the timestamp to a Date object
+          const date = new Date(entry.date._seconds * 1000 + entry.date._nanoseconds / 1000000);
+          return {
+            ...entry,
+            date: date.toLocaleDateString(), // Format date as a readable string
+          };
+        });
+        setWorkHours(formattedWorkHours);
+      })
+      .catch((error) => {
+        console.error('Error fetching sick leave data:', error);
+      });
+  }, [userId])
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Dodajanje delovnih ur:", { date, hoursWorked, overtime, notes });
-    // Tukaj bi dodali funkcijo za shranjevanje podatkov, ko bo povezana z bazo.
+    const newHours = {
+      date: date,
+      hours: hoursWorked,
+      overtime: overtime
+    };
+
+
+    fetch(`http://localhost:3001/api/workHours?userId=${userId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newHours),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const formattedWorkHours = data.workHours.map((entry) => {
+          // Convert the timestamp to a Date object
+          const date = new Date(entry.date._seconds * 1000 + entry.date._nanoseconds / 1000000);
+          return {
+            ...entry,
+            date: date.toLocaleDateString(), // Format date as a readable string
+          };
+        });
+        setWorkHours(formattedWorkHours);
+      })
+      .catch((error) => {
+        console.error('Error adding new sick leave:', error);
+      });
+
+    setDate("");
+  };
+
+  const handleEditClick = (workDay, index) => {
+    setSelectedWorkDay(workDay);
+    setSelectedIndex(index);
+    setEditPopupOpen(true);
+  };
+
+  const handleSaveEdit = (updatedWorkDay) => {
+    // Update the specific item in the workHours array using the index
+    const updatedWorkHours = workHours.map((day, index) =>
+      index === selectedIndex ? updatedWorkDay : day
+    );
+    setWorkHours(updatedWorkHours);
+
+    // Send updated data to backend with the index (or other identifier as needed)
+    fetch(`http://localhost:3001/api/workHours/${selectedIndex}?userId=${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedWorkDay),
+    })
+    .then(response => response.json())
+    .then(data => console.log('Successfully updated:', data))
+    .catch(error => console.error('Error updating work hours:', error));
+    
+    setEditPopupOpen(false);
+  };
+
+  const handleDeleteClick = (workDay, index) => {
+    // Remove the item from the frontend state
+    const updatedWorkHours = workHours.filter((_, i) => i !== index);
+    setWorkHours(updatedWorkHours);
+  
+    // Send delete request to the backend
+    fetch(`http://localhost:3001/api/workHours/${index}?userId=${userId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to delete work hours');
+        }
+        console.log('Successfully deleted:', workDay);
+      })
+      .catch((error) => console.error('Error deleting work hours:', error));
   };
 
   return (
@@ -31,20 +134,18 @@ function WorkHours() {
             <th>Datum</th>
             <th>Število ur</th>
             <th>Nadure</th>
-            <th>Zapiski</th>
             <th>Urejanje</th>
           </tr>
         </thead>
         <tbody>
-          {mockWorkHours.map((workDay, index) => (
+          {workHours.map((workDay, index) => (
             <tr key={index}>
               <td>{workDay.date}</td>
-              <td>{workDay.hoursWorked} ur</td>
-              <td>{workDay.overtime} ur</td>
-              <td>{workDay.notes}</td>
+              <td>{workDay.hours}</td>
+              <td>{workDay.overtime}</td>
               <td>
-                <button className="btn btn-primary btn-sm me-2">Uredi</button>
-                <button className="btn btn-danger btn-sm">Izbriši</button>
+                <button className="btn btn-primary btn-sm me-2" onClick={() => handleEditClick(workDay, index)}>Uredi</button>
+                <button className="btn btn-danger btn-sm" onClick={() => handleDeleteClick(workDay, index)}>Izbriši</button>
               </td>
             </tr>
           ))}
@@ -66,13 +167,22 @@ function WorkHours() {
           <label className="form-label">Nadure:</label>
           <input type="number" className="form-control" value={overtime} onChange={(e) => setOvertime(e.target.value)} required />
         </div>
-        <div className="mb-3">
-          <label className="form-label">Zapiski:</label>
-          <input type="text" className="form-control" value={notes} onChange={(e) => setNotes(e.target.value)} />
-        </div>
         <button type="submit" className="btn btn-primary">Dodaj</button>
       </form>
+
+
+      {isEditPopupOpen && (
+        <EditPopup
+          workDay={selectedWorkDay}
+          onClose={() => setEditPopupOpen(false)}
+          onSave={handleSaveEdit}
+        />
+      )}
+
     </div>
+
+
+
   );
 }
 

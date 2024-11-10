@@ -87,12 +87,12 @@ function LeaveAndVacation() {
               <td>{leave.endDate}</td>
               <td>{leave.leaveHours}</td>
               <td>
-                <button className="btn btn-primary btn-sm me-2">Uredi</button>
+                {/*<button className="btn btn-primary btn-sm me-2">Uredi</button>*/}
                 <button className="btn btn-danger btn-sm">Izbriši</button>
               </td>
             </tr>
           ))}
-          {mockLeaves.map((leave, index) => (
+          {/*{mockLeaves.map((leave, index) => (
             <tr key={index}>
               <td>Dopust</td>
               <td>{leave.startDate}</td>
@@ -103,7 +103,7 @@ function LeaveAndVacation() {
                 <button className="btn btn-danger btn-sm">Izbriši</button>
               </td>
             </tr>
-          ))}
+          ))}*/}
         </tbody>
       </table>
 
