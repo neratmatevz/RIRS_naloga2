@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../../context/Context';
 
 const mockLeaves = [
-  { type: "Vacation", startDate: "2023-08-01", endDate: "2023-08-10" },
-  { type: "Vacation", startDate: "2023-09-15", endDate: "2023-09-18" },
-  { type: "Vacation", startDate: "2023-12-20", endDate: "2023-12-25" },
+  { type: "Vacation", startDate: "2023-08-01", endDate: "2023-08-10",leaveHours: 34 },
+  { type: "Vacation", startDate: "2023-09-15", endDate: "2023-09-18",leaveHours: 33 },
+  { type: "Vacation", startDate: "2023-12-20", endDate: "2023-12-25",leaveHours: 40 },
 ];
 
 function LeaveAndVacation() {
@@ -75,6 +75,7 @@ function LeaveAndVacation() {
             <th>Vrsta</th>
             <th>Datum začetka</th>
             <th>Datum konca</th>
+            <th>Ure</th>
             <th>Urejanje</th>
           </tr>
         </thead>
@@ -84,6 +85,7 @@ function LeaveAndVacation() {
               <td>Bolniška</td>
               <td>{leave.startDate}</td>
               <td>{leave.endDate}</td>
+              <td>{leave.leaveHours}</td>
               <td>
                 <button className="btn btn-primary btn-sm me-2">Uredi</button>
                 <button className="btn btn-danger btn-sm">Izbriši</button>
@@ -95,6 +97,7 @@ function LeaveAndVacation() {
               <td>Dopust</td>
               <td>{leave.startDate}</td>
               <td>{leave.endDate}</td>
+              <td>{leave.leaveHours}</td>
               <td>
                 <button className="btn btn-primary btn-sm me-2">Uredi</button>
                 <button className="btn btn-danger btn-sm">Izbriši</button>
