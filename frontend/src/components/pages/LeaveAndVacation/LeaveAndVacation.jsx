@@ -1,27 +1,73 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '../../../context/Context';
 
 const mockLeaves = [
-  { type: "Vacation", startDate: "2023-08-01", endDate: "2023-08-10", notes: "Summer vacation" },
-  { type: "Sick Leave", startDate: "2023-09-15", endDate: "2023-09-18", notes: "Flu" },
-  { type: "Vacation", startDate: "2023-12-20", endDate: "2023-12-25", notes: "Christmas break" },
+  { type: "Vacation", startDate: "2023-08-01", endDate: "2023-08-10" },
+  { type: "Vacation", startDate: "2023-09-15", endDate: "2023-09-18" },
+  { type: "Vacation", startDate: "2023-12-20", endDate: "2023-12-25" },
 ];
 
 function LeaveAndVacation() {
+  const { userId } = useAuth();
+
   const [leaveType, setLeaveType] = useState("Vacation");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [notes, setNotes] = useState("");
+  const [sickLeave, setSickLeave] = useState([]);
+
+  useEffect(() => {
+
+    fetch(`http://localhost:3001/api/sickAbsence?userId=${userId}`)
+      .then((response) => {
+        if (!response.ok) {
+          return Promise.reject('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setSickLeave(data.sickLeave);
+      })
+      .catch((error) => {
+        console.error('Error fetching sick leave data:', error);
+      });
+
+  }, [userId]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Dodajanje dopusta/bolniške:", { leaveType, startDate, endDate, notes });
-    // Tukaj bi dodali funkcijo za shranjevanje podatkov, ko bo povezana z bazo.
+    console.log(endDate)
+    const newLeave = {
+      userId: userId,
+      endDate: endDate,
+      startDate: startDate
+    };
+
+    if (leaveType === "Sick Leave") {
+
+      fetch('http://localhost:3001/api/sickAbsence', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newLeave),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setSickLeave((prevSickLeave) => [...prevSickLeave, data.sickLeave]);
+        })
+        .catch((error) => {
+          console.error('Error adding new sick leave:', error);
+        });
+
+    }
+    setStartDate("");
+    setEndDate("");
   };
 
   return (
     <div className="container mt-4">
       <h2 className="mb-4">Dopust in Bolniška</h2>
-      
+
       {/* Pregled dopustov in bolniških */}
       <table className="table table-striped mb-4">
         <thead>
@@ -29,17 +75,26 @@ function LeaveAndVacation() {
             <th>Vrsta</th>
             <th>Datum začetka</th>
             <th>Datum konca</th>
-            <th>Zapiski</th>
             <th>Urejanje</th>
           </tr>
         </thead>
         <tbody>
-          {mockLeaves.map((leave, index) => (
+          {sickLeave.map((leave, index) => (
             <tr key={index}>
-              <td>{leave.type}</td>
+              <td>Bolniška</td>
               <td>{leave.startDate}</td>
               <td>{leave.endDate}</td>
-              <td>{leave.notes}</td>
+              <td>
+                <button className="btn btn-primary btn-sm me-2">Uredi</button>
+                <button className="btn btn-danger btn-sm">Izbriši</button>
+              </td>
+            </tr>
+          ))}
+          {mockLeaves.map((leave, index) => (
+            <tr key={index}>
+              <td>Dopust</td>
+              <td>{leave.startDate}</td>
+              <td>{leave.endDate}</td>
               <td>
                 <button className="btn btn-primary btn-sm me-2">Uredi</button>
                 <button className="btn btn-danger btn-sm">Izbriši</button>
@@ -66,10 +121,6 @@ function LeaveAndVacation() {
         <div className="mb-3">
           <label className="form-label">Datum konca:</label>
           <input type="date" className="form-control" value={endDate} onChange={(e) => setEndDate(e.target.value)} required />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Zapiski:</label>
-          <input type="text" className="form-control" value={notes} onChange={(e) => setNotes(e.target.value)} />
         </div>
         <button type="submit" className="btn btn-primary">Dodaj</button>
       </form>
