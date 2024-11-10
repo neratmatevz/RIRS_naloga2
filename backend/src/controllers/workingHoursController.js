@@ -32,7 +32,7 @@ exports.addHours = async (req, res) => {
 
     res.status(200).json({
         userId: userId,
-        workHours: userDoc.data()["workHours"]
+        workHours: (await userDoc.get()).data()["workHours"]
     });
 
 };
