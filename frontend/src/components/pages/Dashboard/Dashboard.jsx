@@ -1,16 +1,12 @@
 import React from 'react';
 
 const mockEmployees = [
-  { id: 1, name: "Janez Novak", totalHours: 160, overtime: 20 },
-  { id: 2, name: "Ana Kovač", totalHours: 150, overtime: 10 },
-  { id: 3, name: "Marko Zupan", totalHours: 170, overtime: 30 },
   { id: 4, name: "Eva Horvat", totalHours: 140, overtime: 5 },
 ];
 
 const mockLeaves = [
   { id: 1, employee: "Janez Novak", type: "Sick Leave", startDate: "2023-09-10", endDate: "2023-09-15" },
   { id: 2, employee: "Ana Kovač", type: "Vacation", startDate: "2023-10-01", endDate: "2023-10-07" },
-  { id: 3, employee: "Marko Zupan", type: "Sick Leave", startDate: "2023-08-20", endDate: "2023-08-22" },
 ];
 
 function Dashboard() {
