@@ -20,28 +20,37 @@ const EditPopup = ({ workDay, onClose, onSave }) => {
       <div className="popup-content">
         <h4>Edit Work Hours</h4>
         <div className="mb-3">
-          <label className="form-label">Date:</label>
+          <label className="form-label" htmlFor="date">
+            Date:
+          </label>
           <input
             type="date"
             className="form-control"
+            id="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
         </div>
         <div className="mb-3">
-          <label className="form-label">Hours Worked:</label>
+          <label className="form-label" htmlFor="hoursWorked">
+            Hours Worked:
+          </label>
           <input
             type="number"
             className="form-control"
+            id="hoursWorked"
             value={hoursWorked}
             onChange={(e) => setHoursWorked(e.target.value)}
           />
         </div>
         <div className="mb-3">
-          <label className="form-label">Overtime:</label>
+          <label className="form-label" htmlFor="overtime">
+            Overtime:
+          </label>
           <input
             type="number"
             className="form-control"
+            id="overtime"
             value={overtime}
             onChange={(e) => setOvertime(e.target.value)}
           />

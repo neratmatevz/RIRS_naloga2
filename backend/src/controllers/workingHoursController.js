@@ -5,6 +5,10 @@ const admin = require('firebase-admin');
 exports.getAllHours = async (req, res) => {
     // Logic to retrieve all working hours from the database or data source
     const userId = req.query.userId;
+
+    if(userId === null || userId === undefined) 
+        return res.status(404).json({msg: "Invalid user"});
+
     let db = getFirestoreInstance();
     const userDoc = await db.collection('users').doc(userId).get();
 
@@ -18,6 +22,13 @@ exports.addHours = async (req, res) => {
     // Logic to add working hours based on request body data
 
     const userId = req.query.userId;
+    res.status(404).json({msg:userId});
+    if(userId === null || userId === undefined) 
+        return res.status(404).json({msg: "Invalid user"});
+
+    if(req.body.workHours === null || req.body.workHours === undefined) 
+        return res.status(404).json({msg: "Missing parameters"})
+
     let db = getFirestoreInstance();
     const userDoc = await db.collection('users').doc(userId);
 
@@ -41,6 +52,13 @@ exports.getHours = async (req, res) => {
     // Logic to retrieve all working hours from the database or data source
     const userId = req.query.userId;
     const id = req.params.id;
+
+    if(userId === null || userId === undefined) 
+        return res.status(404).json({msg: "Invalid user"});
+
+    if(id === null || id === undefined) 
+        return res.status(404).json({msg: "Invalid hour id"})
+
     let db = getFirestoreInstance();
     const userDoc = await db.collection('users').doc(userId).get();
 
@@ -55,6 +73,13 @@ exports.updateHours = async (req, res) => {
     // Logic to update working hours for the given ID based on request body data
 
     const userId = req.query.userId;
+
+    if(userId === null || userId === undefined) 
+        return res.status(404).json({msg: "Invalid user"});
+
+    if(id === null || id === undefined) 
+        return res.status(404).json({msg: "Invalid hour id"})
+
     let db = getFirestoreInstance();
     const userDoc = await db.collection('users').doc(userId);
 
@@ -80,6 +105,13 @@ exports.deleteHours = async (req, res) => {
     // Logic to delete working hours for the given ID
 
     const userId = req.query.userId;
+
+    if(userId === null || userId === undefined) 
+        return res.status(404).json({msg: "Invalid user"});
+
+    if(id === null || id === undefined) 
+        return res.status(404).json({msg: "Invalid hour id"})
+
     let db = getFirestoreInstance();
     const userDoc = await db.collection('users').doc(userId);
 

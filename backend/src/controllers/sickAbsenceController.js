@@ -90,8 +90,14 @@ exports.addSickAbsenceHours = async (req, res) => {
 
 exports.updateSickAbsenceHours = async (req, res) => {
     const id = req.params.id;
+    if(id === null || id === undefined) {
+        res.status(404).json({ message: 'That hour doesnt exist' })
+    }
 };
 
 exports.deleteSickAbsenceHours = async (req, res) => {
     const id = req.params.id;
+    if(id === null || id === undefined) {
+        res.status(404).json({ message: 'That hour doesnt exist' })
+    }
 };
