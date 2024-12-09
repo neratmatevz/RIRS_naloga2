@@ -7,15 +7,41 @@ describe('Dashboard Component', () => {
     it('should render employee name correctly', () => {
       render(<Dashboard />);
       // Check if employee names are rendered correctly
-      expect(screen.getByText('Eva Horvat')).toBeInTheDocument();
+      expect(screen.getByText('Ime Priimek')).toBeInTheDocument();
     });
 
-    it('should render total hours and overtime correctly', () => {
+    it('should render total hours correctly', () => {
       render(<Dashboard />);
       // Check if total hours and overtime for employee are displayed correctly
-      expect(screen.getByText('140 ur')).toBeInTheDocument();
-      expect(screen.getByText('5 ur')).toBeInTheDocument();
+      expect(screen.getByText('10 ur')).toBeInTheDocument();
     });
+
+    it('should render heading correctly', () => {
+      // Render the component
+      render(<Dashboard />);
+
+      // Check that the heading is rendered
+      expect(screen.getByText(/Pregled zaposlenih/i)).toBeInTheDocument();
+    })
+
+    it('should render table headers correctly', () => {
+      // Render the component
+      render(<Dashboard />);
+
+      // Check that table headers are rendered
+      expect(screen.getByText('Ime')).toBeInTheDocument();
+      expect(screen.getByText('Skupno število ur')).toBeInTheDocument();
+    })
+
+    it('should render static employee correctly', () => {
+      // Render the component
+      render(<Dashboard />);
+
+      // Check that static employee data is rendered
+      expect(screen.getByText('Ime Priimek')).toBeInTheDocument();
+      expect(screen.getByText('10 ur')).toBeInTheDocument();
+    })
+
   });
 
   describe('Leave Data', () => {
@@ -25,6 +51,13 @@ describe('Dashboard Component', () => {
       expect(screen.getByText('Sick Leave')).toBeInTheDocument();
       expect(screen.getByText('Vacation')).toBeInTheDocument();
     });
+
+    it('should render heading correctly', () => {
+      render(<Dashboard />);
+
+      // Check that the heading is rendered
+      expect(screen.getByText(/Bolniške in dopusti/i)).toBeInTheDocument();
+    })
 
     it('should render leave details (employee, dates) correctly', () => {
       render(<Dashboard />);
