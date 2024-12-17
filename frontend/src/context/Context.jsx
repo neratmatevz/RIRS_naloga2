@@ -7,6 +7,7 @@ const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 // AuthProvider component that will provide the auth state to your app
+// Zelo pomemben dodatek
 export const AuthProvider = ({ children }) => {
   const [userId, setUserId] = useState(null);  // Store userId globally
 
