@@ -208,7 +208,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: frontend-build
-        path: ./build
+        path: /frontend/build
 
     - name: Install vercel cli
       run: npm install -g vercel
