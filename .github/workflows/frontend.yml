@@ -208,14 +208,13 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: frontend-build
-        path: /frontend/build
+        path: ./build
 
     - name: Install vercel cli
       run: npm install -g vercel
     
     - name: Deploy to Vercel
       run: |
-        cd frontend
         vercel deploy --prod --yes --token ${{secrets.VERCEL_FRONTEND_TOKEN}}
       env:
         VERCEL_ORG_ID: ${{secrets.VERCEL_ORG_ID}}
