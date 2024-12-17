@@ -191,7 +191,7 @@ jobs:
         docker push ${{ secrets.DOCKER_USERNAME }}/backend:prod
         docker push ${{ secrets.DOCKER_USERNAME }}/backend:${{ github.sha }}
 
-deploy-backend:
+  deploy-backend:
     needs: test-backend
     runs-on: ubuntu-latest
     
