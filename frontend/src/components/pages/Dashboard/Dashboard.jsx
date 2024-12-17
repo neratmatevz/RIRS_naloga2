@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-const mockEmployees = [
-  { id: 4, name: "Eva Horvat", totalHours: 140, overtime: 5 },
-];
+/*const mockEmployees = [
+  { imePriimek: "Eva Horvat", hours: 140},
+];*/
 
 const mockLeaves = [
   { id: 1, employee: "Janez Novak", type: "Sick Leave", startDate: "2023-09-10", endDate: "2023-09-15" },
@@ -10,6 +10,25 @@ const mockLeaves = [
 ];
 
 function Dashboard() {
+  const [employeeHours, setEmployeeHours] = useState([{imePriimek: "Ime Priimek", hours:10}]);
+
+  useEffect(() => {
+    fetch(`${process.env.REACT_APP_API_URL}/adminDashboard/workHours`)
+    .then((response) => {
+      if (!response.ok) {
+        return Promise.reject('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log(data)
+      setEmployeeHours(data);
+    })
+    .catch((error) => {
+      console.error('Error fetching employee hours data:', error);
+    });
+  }, [])
+
   return (
     <div className="container mt-4">
       <h2 className="mb-4">Pregled zaposlenih</h2>
@@ -20,15 +39,14 @@ function Dashboard() {
           <tr>
             <th>Ime</th>
             <th>Skupno število ur</th>
-            <th>Nadure</th>
+            
           </tr>
         </thead>
         <tbody>
-          {mockEmployees.map((employee) => (
-            <tr key={employee.id}>
-              <td>{employee.name}</td>
-              <td>{employee.totalHours} ur</td>
-              <td>{employee.overtime} ur</td>
+          {employeeHours.map((employee, index) => (
+            <tr key={index}>
+              <td>{employee.imePriimek}</td>
+              <td>{employee.hours} ur</td>
             </tr>
           ))}
         </tbody>

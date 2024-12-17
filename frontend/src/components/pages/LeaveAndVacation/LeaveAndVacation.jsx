@@ -17,7 +17,7 @@ function LeaveAndVacation() {
 
   useEffect(() => {
 
-    fetch(`http://localhost:3001/api/sickAbsence?userId=${userId}`)
+    fetch(`${process.env.REACT_APP_API_URL}/sickAbsence?userId=${userId}`)
       .then((response) => {
         if (!response.ok) {
           return Promise.reject('Network response was not ok');
@@ -44,7 +44,7 @@ function LeaveAndVacation() {
 
     if (leaveType === "Sick Leave") {
 
-      fetch('http://localhost:3001/api/sickAbsence', {
+      fetch(`${process.env.REACT_APP_API_URL}/sickAbsence`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
